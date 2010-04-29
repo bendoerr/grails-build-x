@@ -14,7 +14,7 @@ import org.gradle.api.file.FileCollection
 class GrailsPlugin implements Plugin<Project> {
     File metadataFile
 
-    void use(Project project) {
+    void apply(Project project) {
         project.with {
             apply id: 'groovy'
             apply id: 'war'
