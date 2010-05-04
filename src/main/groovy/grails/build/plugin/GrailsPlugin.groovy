@@ -16,8 +16,8 @@ class GrailsPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.with {
-            apply id: 'groovy'
-            apply id: 'war'
+            apply plugin: 'groovy'
+            apply plugin: 'war'
 
             if (!project.hasProperty("grailsHome")) {
                 grailsHome = System.getProperty("grails.home") ?: System.getenv("GRAILS_HOME")
@@ -26,7 +26,7 @@ class GrailsPlugin implements Plugin<Project> {
             grailsVersion = deduceGrailsVersion()
 
             // TODO Find some way of setting the environment properly.
-            if (version == "unspecified") version = "0.1"            
+            if (version == "unspecified") version = "0.1"
             if (!project.hasProperty("grailsEnv")) grailsEnv = "development"
             if (!project.hasProperty("projectType")) projectType = "app"
             if (!project.hasProperty("servletVersion")) servletVersion = "2.5"
@@ -56,7 +56,7 @@ class GrailsPlugin implements Plugin<Project> {
             sourceSets {
                 main {
                     groovy {
-                        def grailsAppDirs = file("grails-app").listFiles({ f -> f.directory } as FileFilter)
+                        def grailsAppDirs = file("grails-app").listFiles({f -> f.directory } as FileFilter)
                         srcDirs grailsAppDirs, "src/groovy", "src/java"
                         compileClasspath += configurations.provided
                     }
@@ -64,19 +64,98 @@ class GrailsPlugin implements Plugin<Project> {
             }
 
             dependencies {
-                groovy  "org.codehaus.groovy:groovy:1.7.0"
-                compile "org.grails:grails-bootstrap:1.2.0"
+                groovy "org.codehaus.groovy:groovy:1.7.0"
+                
+                compile 'org.grails:grails-bootstrap:1.3.0.RC2',
+                        'org.grails:grails-core:1.3.0.RC2',
+                        'org.grails:grails-crud:1.3.0.RC2',
+                        'org.grails:grails-docs:1.3.0.RC2',
+                        'org.grails:grails-gorm:1.3.0.RC2',
+                        'org.grails:grails-osgi:1.3.0.RC2',
+                        'org.grails:grails-resources:1.3.0.RC2',
+                        'org.grails:grails-scripts:1.3.0.RC2',
+                        'org.grails:grails-spring:1.3.0.RC2',
+                        'org.grails:grails-test:1.3.0.RC2',
+                        'org.grails:grails-web:1.3.0.RC2',
+                        'org.grails:grails-webflow:1.3.0.RC2'
 
-                // Required by Grails' AST transformations.
-                provided "commons-lang:commons-lang:2.4",
-                         "javax.servlet:servlet-api:2.5",
-                         "log4j:log4j:1.2.14",
-                         "org.grails:grails-spring:1.2.0",
-                         "org.slf4j:slf4j-api:1.5.8",
-                         "org.slf4j:slf4j-jdk14:1.5.8",
-                         "org.slf4j:jcl-over-slf4j:1.5.8",
-                         "org.springframework:spring-core:3.0.0.RELEASE",
-                         "org.springframework:spring-web:3.0.0.RELEASE"
+                compile ':org.springframework.aop:3.0.0.RELEASE',
+                        ':org.springframework.asm:3.0.0.RELEASE',
+                        ':org.springframework.aspects:3.0.0.RELEASE',
+                        ':org.springframework.beans:3.0.0.RELEASE',
+                        ':org.springframework.binding:2.0.8.RELEASE',
+                        ':org.springframework.context:3.0.0.RELEASE',
+                        ':org.springframework.context.support:3.0.0.RELEASE',
+                        ':org.springframework.core:3.0.0.RELEASE',
+                        ':org.springframework.expression:3.0.0.RELEASE',
+                        ':org.springframework.instrument:3.0.0.RELEASE',
+                        ':org.springframework.jdbc:3.0.0.RELEASE',
+                        ':org.springframework.jms:3.0.0.RELEASE',
+                        ':org.springframework.js:2.0.8.RELEASE',
+                        ':org.springframework.orm:3.0.0.RELEASE',
+                        ':org.springframework.oxm:3.0.0.RELEASE',
+                        ':org.springframework.test:3.0.0.RELEASE',
+                        ':org.springframework.transaction:3.0.0.RELEASE',
+                        ':org.springframework.web:3.0.0.RELEASE',
+                        ':org.springframework.web.servlet:3.0.0.RELEASE',
+                        ':org.springframework.webflow:2.0.8.RELEASE'
+
+                compile ':ant:1.7.1',
+                        ':ant-junit:1.7.1',
+                        ':ant-launcher:1.7.1',
+                        ':antlr:2.7.6',
+                        ':ant-nodeps:1.7.1',
+                        ':ant-trax:1.7.1',
+                        ':aopalliance:1.0',
+                        ':aspectjrt:1.6.6',
+                        ':aspectjweaver:1.6.6',
+                        ':cglib-nodep:2.1_3',
+                        ':commons-beanutils:1.8.0',
+                        ':commons-cli:1.0',
+                        ':commons-codec:1.3',
+                        ':commons-collections:3.2.1',
+                        ':commons-dbcp:1.2.2',
+                        ':commons-el:1.0',
+                        ':commons-fileupload:1.2.1',
+                        ':commons-io:1.4',
+                        ':commons-lang:2.4',
+                        ':commons-pool:1.5.3',
+                        ':commons-validator:1.3.1',
+                        ':dom4j:1.6.1',
+                        ':ehcache-core:1.7.1',
+                        ':ejb3-persistence:1.0.2.GA',
+                        ':gant_groovy1.7:1.9.2',
+                        ':gpars:0.9',
+                        ':groovy-all:1.7.2',
+                        ':hibernate-annotations:3.4.0.GA',
+                        ':hibernate-commons-annotations:3.1.0.GA',
+                        ':hibernate-core:3.3.1.GA',
+                        ':hibernate-ehcache:3.3.1.GA',
+                        ':hibernate-validator:3.1.0.GA',
+                        ':hsqldb:1.8.0.10',
+                        ':ivy:2.1.0',
+                        ':javassist:3.11.0.GA',
+                        ':jcl-over-slf4j:1.5.8',
+                        ':jline:0.9.91',
+                        ':jsp-api:2.0',
+                        ':jsp-api:2.1',
+                        ':jsr107cache:1.0',
+                        ':jsr166y:070108',
+                        ':jstl:1.1.2',
+                        ':jta:1.1',
+                        ':jul-to-slf4j:1.5.8',
+                        ':log4j:1.2.15',
+                        ':log4j:1.2.15',
+                        ':oro:2.0.8',
+                        ':radeox:1.0-b2',
+                        ':serializer:2.7.1',
+                        ':servlet-api:2.5',
+                        ':sitemesh:2.4',
+                        'org.slf4j:slf4j-api:1.5.8',
+                        'org.slf4j:slf4j-log4j12:1.5.8',
+                        ':standard:1.1.2',
+                        ':svnkit:1.3.1',
+                        ':xpp3_min:1.1.3.4.O'
 
                 // Insert the plugin as a runtime dependency so that
                 // the project can use the plugin's custom classes.
@@ -107,13 +186,14 @@ class GrailsPlugin implements Plugin<Project> {
             }
 
             task("verifyProjectType") {
-                assert projectType in [ "app", "plugin" ], "Project type is not configured " +
+                assert projectType in ["app", "plugin"], "Project type is not configured " +
                         "correctly. It should be one of 'app' or 'plugin'."
             }
 
             compileGroovy.source sourceSets.main.groovy
-            compileGroovy.source projectDir.listFiles({ f ->
-                f.name ==~ /\w+GrailsPlugin.groovy/ } as FileFilter)
+            compileGroovy.source projectDir.listFiles({f ->
+                f.name ==~ /\w+GrailsPlugin.groovy/
+            } as FileFilter)
 
             // These tasks do not require a project.
             createProjectStructureTask(project)
@@ -128,13 +208,13 @@ class GrailsPlugin implements Plugin<Project> {
                 // Almost all tasks depend on information about the build. This
                 // task loads it up.
                 createBuildDataTask(project)
-                createBuildPluginsTask(project, [ buildData ])
-                createCopyWebXmlTemplateTask(project, [ buildData, buildPlugins, tmpBuildDir ])
-                createGenerateWebXmlTask(project, [ copyWebXmlTemplate ])
-                createGenerateApplicationContextXmlTask(project, [ buildData, buildPlugins ])
+                createBuildPluginsTask(project, [buildData])
+                createCopyWebXmlTemplateTask(project, [buildData, buildPlugins, tmpBuildDir])
+                createGenerateWebXmlTask(project, [copyWebXmlTemplate])
+                createGenerateApplicationContextXmlTask(project, [buildData, buildPlugins])
                 createCopyJspsTask(project, [])
-                createPackageI18nTask(project, [ buildData ])
-                createRunTask(project, [ compileGroovy, processResources ])
+                createPackageI18nTask(project, [buildData])
+                createRunTask(project, [compileGroovy, processResources])
 
                 // The i18n and JSP files have to be included in the runtime
                 // classpath, so we add the 'resources' directory now.
@@ -198,8 +278,8 @@ class GrailsPlugin implements Plugin<Project> {
      */
     private createInitTask(Project project) {
         project.with {
-            task("init", dependsOn: [ tmpBuildDir, verifyProjectType, projectStructure ]) << {
-                [ "grails-shared-files.jar", "grails-${projectType}-files.jar" ].each { r ->
+            task("init", dependsOn: [tmpBuildDir, verifyProjectType, projectStructure]) << {
+                ["grails-shared-files.jar", "grails-${projectType}-files.jar"].each {r ->
                     // Before we can extract the project files, we must copy
                     // them from grails-resources-*.jar to a temporary
                     // location. Gradle cannot yet extract an archive from
@@ -231,7 +311,7 @@ class GrailsPlugin implements Plugin<Project> {
                 // Rename the plugin descriptor and fill in the placeholders.
                 if (projectType == "plugin") {
                     def pluginName = GrailsNameUtils.getNameFromScript(project.name)
-                    if(!(pluginName ==~ /[a-zA-Z-]+/)) {
+                    if (!(pluginName ==~ /[a-zA-Z-]+/)) {
                         throw new GradleException("Specified plugin name [${project.name}] is invalid. " +
                                 "Plugin names can only contain word characters separated by hyphens.")
                     }
@@ -242,7 +322,7 @@ class GrailsPlugin implements Plugin<Project> {
                             overwrite: true)
 
                     // Insert the name of the plugin into whatever files need it.
-                    ant.replace(dir:"${projectDir}") {
+                    ant.replace(dir: "${projectDir}") {
                         include(name: "*GrailsPlugin.groovy")
                         include(name: "scripts/*")
                         replacefilter(token: "@plugin.name@", value: pluginName)
@@ -328,8 +408,8 @@ class GrailsPlugin implements Plugin<Project> {
                     // Can't use standard Ant filter here, because the metadata
                     // isn't resolved until execution time. This is also the reason
                     // we're using closures in the GString.
-                    filter { line ->
-                        line.replace("@grails.project.key@", "${->buildData.appName}-${grailsEnv}-${->buildData.appVersion}")
+                    filter {line ->
+                        line.replace("@grails.project.key@", "${-> buildData.appName}-${grailsEnv}-${-> buildData.appVersion}")
                     }
                 }
                 into targetFile.parentFile
@@ -382,7 +462,7 @@ class GrailsPlugin implements Plugin<Project> {
                             property(name: "application", ref: "grailsApplication")
                             property(name: "plugins") {
                                 map {
-                                    buildPlugins.pluginManager.sourcePlugins.each { plugin ->
+                                    buildPlugins.pluginManager.sourcePlugins.each {plugin ->
                                         entry(
                                                 key: plugin.pluginDescriptor.class.name,
                                                 value: plugin.pluginDirectory.absolutePath)
@@ -488,8 +568,8 @@ class GrailsPlugin implements Plugin<Project> {
      */
     private void copyToStream(InputStream i, OutputStream o) {
         def buf = new byte[8192]
-        i.withStream { input ->
-            o.withStream { output ->
+        i.withStream {input ->
+            o.withStream {output ->
                 for (int bytesRead = input.read(buf); bytesRead != -1; bytesRead = input.read(buf)) {
                     output.write(buf, 0, bytesRead)
                 }

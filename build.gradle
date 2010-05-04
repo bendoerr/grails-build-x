@@ -8,7 +8,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    flatDir dirs: './lib'
     flatDir dirs: 'C:/ridge/tools/grails/dist'
+    flatDir dirs: 'C:/ridge/projects/gradle/subprojects/gradle-core/build/libs/'
 }
 
 dependencies {
@@ -24,25 +26,26 @@ dependencies {
 
     runtime "org.grails:grails-resources:1.3.0.RC2"
 
-    provided "javax.servlet:servlet-api:2.5"
+    compile "javax.servlet:servlet-api:2.5"
 
     // Required by the Groovy compiler, but the code has no explicit
     // dependency on these.
-    provided "org.springframework:spring-beans:3.0.0.RELEASE"
+    compile "org.springframework:spring-beans:3.0.0.RELEASE"
 
     // Required by Grails' AST transformations, which are included in
     // grails-core.
-    provided "commons-lang:commons-lang:2.4",
+    compile "commons-lang:commons-lang:2.4",
             "org.slf4j:slf4j-api:1.5.10",
             "org.slf4j:slf4j-jdk14:1.5.10",
             "org.slf4j:jcl-over-slf4j:1.5.10",
             "org.springframework:spring-web:3.0.0.RELEASE"
 
     itCompile gradleApi(),
-            "org.gradle:gradle-test:0.9-Preview",
+            "org.gradle:gradle-core-test:0.9-20100429134444-0400",
             "org.testng:testng:5.11:jdk15",
             "org.hamcrest:hamcrest-core:1.1",
-            "org.hamcrest:hamcrest-library:1.1"
+            "org.hamcrest:hamcrest-library:1.1",
+            "ch.qos.logback:logback-core:0.9.18"
 
     itRuntime "org.apache.ant:ant:1.7.1",
             // Required by GradleLauncher
@@ -52,9 +55,17 @@ dependencies {
             "commons-lang:commons-lang:2.4",
             "org.slf4j:slf4j-api:1.5.10",
             "org.slf4j:jul-to-slf4j:1.5.10",
+            "ch.qos.logback:logback-core:0.9.18",
             "ch.qos.logback:logback-classic:0.9.18",
             "net.sf.jopt-simple:jopt-simple:3.2",
-            "junit:junit:4.7"
+            "junit:junit:4.7",
+            'org.jruby.ext.posix:jna-posix:1.0.3',
+            'org.fusesource.jansi:jansi:1.2',
+            'asm:asm-all:3.2@jar',
+            'org.sonatype.pmaven:pmaven-common:0.8-20100325@jar',
+            'org.sonatype.pmaven:pmaven-groovy:0.8-20100325@jar',
+            'org.codehaus.plexus:plexus-component-annotations:1.5.2',
+            'net.java.dev.jna:jna:3.2.2'
 }
 
 sourceSets {
@@ -97,3 +108,60 @@ task integTest(type: Test, dependsOn: jar) { //}, dependsOn: [intTestImage, binZ
 //        options.fork(forkArgs)
 //    }
 }
+
+// some recurring strings
+orderEntryType = 'module-library'
+gradleLibraryId = 'Gradle Libraries'
+
+task intellijSync << {
+
+    // change this to the name of your module file
+    def moduleFileName = "grails-build-x.iml"
+    def root = new XmlParser().parse(moduleFileName)
+    def newModuleRootManager = root.component.find {it.'@name' == 'NewModuleRootManager'}
+
+    // if there is already a module library in place we should remove it
+    removeOldOrderEntry(newModuleRootManager)
+
+    // add the new module library with our current gradle dependencies
+    addNewOrderEntry(newModuleRootManager)
+
+    // output the .iml XML
+    def writer = new StringWriter()
+    new XmlNodePrinter(new PrintWriter(writer)).print(root)
+    def result = writer.toString()
+    print result
+
+    // overwrite our old .iml file
+    def moduleFile = new File(moduleFileName)
+    moduleFile.text = result
+}
+
+private def addNewOrderEntry(newModuleRootManager) {
+    def newOrderEntry = newModuleRootManager.appendNode('orderEntry', [type: orderEntryType])
+    def newGradleLibrary = newOrderEntry.appendNode('library', [name: gradleLibraryId])
+    def classesNode = newGradleLibrary.appendNode('CLASSES')
+
+    def path = configurations.compile.asPath
+    def jars = path.split(';')
+    jars.each {jar ->
+        classesNode.appendNode('root', [url: "jar://$jar!/"])
+    }
+
+    path = configurations.itCompile.asPath
+    jars = path.split(';')
+    jars.each {jar ->
+        classesNode.appendNode('root', [url: "jar://$jar!/"])
+    }
+}
+
+private def removeOldOrderEntry(newModuleRootManager) {
+    def oldOrderEntry = newModuleRootManager.orderEntry.find {
+        (it.'@type' == orderEntryType) && (it.library[0].'@name' == gradleLibraryId)
+    }
+    if (oldOrderEntry) {
+        newModuleRootManager.remove(oldOrderEntry)
+    }
+}
+
+

@@ -31,7 +31,7 @@ buildscript {
     repositories {
         mavenCentral()
         mavenRepo urls: "http://download.java.net/maven/2/"
-        flatDir dirs: "${new File('build/libs').absolutePath}"
+        flatDir dirs: "C:/ridge/projects/grails-build-x/build/libs/"
     }
 
     dependencies {
@@ -41,7 +41,7 @@ buildscript {
     }
 }
 
-apply id: 'grails-x'
+apply plugin: 'grails-x'
 
 version = "1.0-SNAPSHOT"
 servletVersion = "2.4"
@@ -94,7 +94,7 @@ buildscript {
     }
 }
 
-apply id: 'grails-x'
+apply plugin: 'grails-x'
 
 projectType = "plugin"
 
@@ -153,7 +153,7 @@ buildscript {
     }
 }
 
-apply id: 'grails-x'
+apply plugin: 'grails-x'
 
 projectType = "plugin"
 
